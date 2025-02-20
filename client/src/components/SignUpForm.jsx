@@ -8,15 +8,27 @@ const SignUpForm = () => {
 	const [gender, setGender] = useState("");
 	const [age, setAge] = useState("");
 	const [genderPreference, setGenderPreference] = useState("");
+	const [travelPreferences, setTravelPreferences] = useState([]); // New state for travel preferences
 
 	const { signup, loading } = useAuthStore();
+
+	// Handle travel preferences selection
+	const handleTravelPreferenceChange = (preference) => {
+		if (travelPreferences.includes(preference)) {
+			// If already selected, remove it
+			setTravelPreferences(travelPreferences.filter((item) => item !== preference));
+		} else {
+			// If not selected, add it
+			setTravelPreferences([...travelPreferences, preference]);
+		}
+	};
 
 	return (
 		<form
 			className='space-y-6'
 			onSubmit={(e) => {
 				e.preventDefault();
-				signup({ name, email, password, gender, age, genderPreference });
+				signup({ name, email, password, gender, age, genderPreference, travelPreferences });
 			}}
 		>
 			{/* NAME */}
@@ -177,6 +189,42 @@ const SignUpForm = () => {
 				</div>
 			</div>
 
+			{/* TRAVEL PREFERENCES */}
+			<div>
+				<label className='block text-sm font-medium text-gray-700'>
+					What type of people do you love to travel with?
+				</label>
+				<div className='mt-2 grid grid-cols-2 gap-4'>
+					{[
+						"Introvert",
+						"Extrovert",
+						"Rich",
+						"Happy Person",
+						"Coder",
+						"Singer",
+						"Dancer",
+						"Storyteller",
+					].map((preference) => (
+						<div key={preference} className='flex items-center'>
+							<input
+								id={preference.toLowerCase()}
+								type='checkbox'
+								checked={travelPreferences.includes(preference)}
+								onChange={() => handleTravelPreferenceChange(preference)}
+								className='h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded'
+							/>
+							<label
+								htmlFor={preference.toLowerCase()}
+								className='ml-2 block text-sm text-gray-900'
+							>
+								{preference}
+							</label>
+						</div>
+					))}
+				</div>
+			</div>
+
+			{/* SUBMIT BUTTON */}
 			<div>
 				<button
 					type='submit'
@@ -193,4 +241,5 @@ const SignUpForm = () => {
 		</form>
 	);
 };
+
 export default SignUpForm;

@@ -1,80 +1,115 @@
-import { useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import { Header } from "../components/Header";
-import { useMatchStore } from "../store/useMatchStore";
-import { Frown } from "lucide-react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import gsap from "gsap";
+import Headerr from "../components/Headerr";
+import Footer from "../components/Footer";
+import bg from "../assets/just.png"
+import { MapPin, Users, MessageSquare } from 'lucide-react';
 
-import SwipeArea from "../components/SwipeArea";
-import SwipeFeedback from "../components/SwipeFeedback";
-import { useAuthStore } from "../store/useAuthStore";
+function HomePage() {
+  const navigate = useNavigate();
 
-const HomePage = () => {
-	const { isLoadingUserProfiles, getUserProfiles, userProfiles, subscribeToNewMatches, unsubscribeFromNewMatches } =
-		useMatchStore();
+  useEffect(() => {
+    gsap.fromTo(
+      ".hero-text",
+      { opacity: 0, y: 100 },
+      { opacity: 1, y: 0, duration: 1.5, ease: "power3.out", stagger: 0.3 }
+    );
+  }, []);
 
-	const { authUser } = useAuthStore();
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Headerr />
 
-	useEffect(() => {
-		getUserProfiles();
-	}, [getUserProfiles]);
+      {/* Hero Section with Background Image */}
+      <div
+        className="relative flex flex-col items-center justify-center min-h-screen text-white px-4"
+        style={{
+          backgroundImage: `url(${bg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-20"></div> {/* Dark overlay */}
+        
+        <div className="relative text-center z-10">
+          <h1 className="hero-text text-5xl font-bold mb-6">Find Your Perfect Travel Partner</h1>
+          <p className="hero-text text-xl mb-8 max-w-2xl mx-auto">
+            Connect with like-minded travelers, share experiences, and explore the world together.
+          </p>
+          <button
+            onClick={() => navigate("/swipe")}
+            className="hero-text px-8 py-4 bg-white text-blue-600 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
+            Start Matching
+          </button>
+        </div>
+      </div>
 
-	useEffect(() => {
-		authUser && subscribeToNewMatches();
+      {/* Features Section */}
+     {/* Features Section */}
+<div className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Box 1 */}
+      <div className="text-center p-8 bg-gradient-to-r from-[#2e7498] to-[#6ca7c6] rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <MapPin className="h-12 w-12 text-white mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2 text-white">Discover Places</h3>
+        <p className="text-gray-200">Find amazing destinations and create unforgettable memories</p>
+      </div>
 
-		return () => {
-			unsubscribeFromNewMatches();
-		};
-	}, [subscribeToNewMatches, unsubscribeFromNewMatches, authUser]);
+      {/* Box 2 */}
+      <div className="text-center p-8 bg-gradient-to-r from-[#2e7498] to-[#6ca7c6] rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Users className="h-12 w-12 text-white mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2 text-white">Match Travelers</h3>
+        <p className="text-gray-200">Connect with travelers who share your interests and style</p>
+      </div>
 
-	return (
-		<div
-			className='flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-pink-100 to-purple-100
-		 overflow-hidden
-		'
-		>
-			<Sidebar />
-			<div className='flex-grow flex flex-col overflow-hidden'>
-				<Header />
-				<main className='flex-grow flex flex-col gap-10 justify-center items-center p-4 relative overflow-hidden'>
-					{userProfiles.length > 0 && !isLoadingUserProfiles && (
-						<>
-							<SwipeArea />
-							<SwipeFeedback />
-						</>
-					)}
+      {/* Box 3 */}
+      <div className="text-center p-8 bg-gradient-to-r from-[#2e7498] to-[#6ca7c6] rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <MessageSquare className="h-12 w-12 text-white mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2 text-white">Plan Together</h3>
+        <p className="text-gray-200">Chat and plan your perfect trip with your matches</p>
+      </div>
+    </div>
+  </div>
+</div>
+      <div className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12">Popular Destinations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3" alt="Bali" className="w-full h-48 object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold text-xl mb-2">Bali, Indonesia</h3>
+                <p className="text-gray-600">Tropical paradise with rich culture</p>
+              </div>
+            </div>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a" alt="Paris" className="w-full h-48 object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold text-xl mb-2">Paris, France</h3>
+                <p className="text-gray-600">City of lights and romance</p>
+              </div>
+            </div>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963" alt="Italy" className="w-full h-48 object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold text-xl mb-2">Tuscany, Italy</h3>
+                <p className="text-gray-600">Rolling hills and historic cities</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-					{userProfiles.length === 0 && !isLoadingUserProfiles && <NoMoreProfiles />}
+      <Footer />
+    </div>
+  );
+}
 
-					{isLoadingUserProfiles && <LoadingUI />}
-				</main>
-			</div>
-		</div>
-	);
-};
 export default HomePage;
 
-const NoMoreProfiles = () => (
-	<div className='flex flex-col items-center justify-center h-full text-center p-8'>
-		<Frown className='text-pink-400 mb-6' size={80} />
-		<h2 className='text-3xl font-bold text-gray-800 mb-4'>Woah there, speedy fingers!</h2>
-		<p className='text-xl text-gray-600 mb-6'>Bro are you OK? Maybe it&apos;s time to touch some grass.</p>
-	</div>
-);
 
-const LoadingUI = () => {
-	return (
-		<div className='relative w-full max-w-sm h-[28rem]'>
-			<div className='card bg-white w-96 h-[28rem] rounded-lg overflow-hidden border border-gray-200 shadow-sm'>
-				<div className='px-4 pt-4 h-3/4'>
-					<div className='w-full h-full bg-gray-200 rounded-lg' />
-				</div>
-				<div className='card-body bg-gradient-to-b from-white to-pink-50 p-4'>
-					<div className='space-y-2'>
-						<div className='h-6 bg-gray-200 rounded w-3/4' />
-						<div className='h-4 bg-gray-200 rounded w-1/2' />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-};
+

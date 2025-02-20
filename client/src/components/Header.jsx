@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 import { Flame, User, LogOut, Menu } from "lucide-react";
+import logo from "../assets/logo-dark2.svg";
 
 export const Header = () => {
 	const { authUser, logout } = useAuthStore();
@@ -22,14 +23,13 @@ export const Header = () => {
 	}, []);
 
 	return (
-		<header className='bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 shadow-lg'>
+		<header className='bg-gradient-to-r from-[#2e7498] to-[#6ca7c6]'>
 			<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
 				<div className='flex justify-between items-center py-4'>
 					<div className='flex items-center'>
-						<Link to='/' className='flex items-center space-x-2'>
-							<Flame className='w-8 h-8 text-white' />
-							<span className='text-2xl font-bold text-white hidden sm:inline'>Swipe</span>
-						</Link>
+					<Link to="/" className="flex items-center">
+              <img src={logo} alt="tinder-logo" className="h-16 w-auto" />
+            </Link>
 					</div>
 
 					<div className='hidden md:flex items-center space-x-4'>

@@ -9,7 +9,8 @@ const ProfilePage = () => {
 	const [bio, setBio] = useState(authUser.bio || "");
 	const [age, setAge] = useState(authUser.age || "");
 	const [gender, setGender] = useState(authUser.gender || "");
-	const [genderPreference, setGenderPreference] = useState(authUser.genderPreference || []);
+	const [genderPreference, setGenderPreference] = useState(authUser.genderPreference || "");
+	const [travelPreferences, setTravelPreferences] = useState(authUser.travelPreferences || []); // Travel preferences from signup
 	const [image, setImage] = useState(authUser.image || null);
 
 	const fileInputRef = useRef(null);
@@ -18,7 +19,7 @@ const ProfilePage = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		updateProfile({ name, bio, age, gender, genderPreference, image });
+		updateProfile({ name, bio, age, gender, genderPreference, travelPreferences, image });
 	};
 
 	const handleImageChange = (e) => {
@@ -28,12 +29,20 @@ const ProfilePage = () => {
 			reader.onloadend = () => {
 				setImage(reader.result);
 			};
-
 			reader.readAsDataURL(file);
 		}
 	};
 
-	console.log(image);
+	// Handle travel preferences selection
+	const handleTravelPreferenceChange = (preference) => {
+		if (travelPreferences.includes(preference)) {
+			// If already selected, remove it
+			setTravelPreferences(travelPreferences.filter((item) => item !== preference));
+		} else {
+			// If not selected, add it
+			setTravelPreferences([...travelPreferences, preference]);
+		}
+	};
 
 	return (
 		<div className='min-h-screen bg-gray-50 flex flex-col'>
@@ -60,9 +69,7 @@ const ProfilePage = () => {
 										required
 										value={name}
 										onChange={(e) => setName(e.target.value)}
-										className='appearance-none block w-full px-3 py-2 border border-gray-300
-										 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 
-										sm:text-sm'
+										className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm'
 									/>
 								</div>
 							</div>
@@ -112,9 +119,11 @@ const ProfilePage = () => {
 									{["Male", "Female", "Both"].map((option) => (
 										<label key={option} className='inline-flex items-center'>
 											<input
-												type='checkbox'
-												className='form-checkbox text-pink-600'
-												checked={genderPreference.toLowerCase() === option.toLowerCase()}
+												type='radio'
+												className='form-radio text-pink-600'
+												name='genderPreference'
+												value={option.toLowerCase()}
+												checked={genderPreference === option.toLowerCase()}
 												onChange={() => setGenderPreference(option.toLowerCase())}
 											/>
 											<span className='ml-2'>{option}</span>
@@ -123,8 +132,43 @@ const ProfilePage = () => {
 								</div>
 							</div>
 
-							{/* BIO */}
+							{/* TRAVEL PREFERENCES */}
+							<div>
+								<span className='block text-sm font-medium text-gray-700 mb-2'>
+									What type of people do you love to travel with?
+								</span>
+								<div className='grid grid-cols-2 gap-4'>
+									{[
+										"Introvert",
+										"Extrovert",
+										"Rich",
+										"Happy Person",
+										"Coder",
+										"Singer",
+										"Dancer",
+										"Storyteller",
+									].map((preference) => (
+										<label
+											key={preference}
+											className={`flex items-center p-2 rounded-md ${
+												travelPreferences.includes(preference)
+													? "border-2 border-red-500 bg-red-50" // Highlight selected preferences
+													: "border border-gray-300"
+											}`}
+										>
+											<input
+												type='checkbox'
+												className='form-checkbox text-pink-600'
+												checked={travelPreferences.includes(preference)}
+												onChange={() => handleTravelPreferenceChange(preference)}
+											/>
+											<span className='ml-2 text-sm text-gray-900'>{preference}</span>
+										</label>
+									))}
+								</div>
+							</div>
 
+							{/* BIO */}
 							<div>
 								<label htmlFor='bio' className='block text-sm font-medium text-gray-700'>
 									Bio
@@ -141,6 +185,7 @@ const ProfilePage = () => {
 								</div>
 							</div>
 
+							{/* IMAGE UPLOAD */}
 							<div>
 								<label className='block text-sm font-medium text-gray-700'>Cover Image</label>
 								<div className='mt-1 flex items-center'>
@@ -161,16 +206,17 @@ const ProfilePage = () => {
 								</div>
 							</div>
 
+							{/* IMAGE PREVIEW */}
 							{image && (
 								<div className='mt-4'>
 									<img src={image} alt='User Image' className='w-48 h-full object-cover rounded-md' />
 								</div>
 							)}
 
+							{/* SUBMIT BUTTON */}
 							<button
 								type='submit'
-								className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 
-								focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500'
+								className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500'
 								disabled={loading}
 							>
 								{loading ? "Saving..." : "Save"}
@@ -182,4 +228,5 @@ const ProfilePage = () => {
 		</div>
 	);
 };
+
 export default ProfilePage;

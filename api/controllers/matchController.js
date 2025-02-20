@@ -110,19 +110,21 @@ export const getUserProfiles = async (req, res) => {
 	try {
 		const currentUser = await User.findById(req.user.id);
 
+		// Fetch users based on gender preference and travel preferences
 		const users = await User.find({
 			$and: [
-				{ _id: { $ne: currentUser.id } },
-				{ _id: { $nin: currentUser.likes } },
-				{ _id: { $nin: currentUser.dislikes } },
-				{ _id: { $nin: currentUser.matches } },
+				{ _id: { $ne: currentUser.id } }, // Exclude the current user
+				{ _id: { $nin: currentUser.likes } }, // Exclude users already liked
+				{ _id: { $nin: currentUser.dislikes } }, // Exclude users already disliked
+				{ _id: { $nin: currentUser.matches } }, // Exclude users already matched
 				{
 					gender:
 						currentUser.genderPreference === "both"
-							? { $in: ["male", "female"] }
-							: currentUser.genderPreference,
+							? { $in: ["male", "female"] } // Show both genders if preference is "both"
+							: currentUser.genderPreference, // Show specific gender otherwise
 				},
-				{ genderPreference: { $in: [currentUser.gender, "both"] } },
+				{ genderPreference: { $in: [currentUser.gender, "both"] } }, // Show profiles that prefer the current user's gender or "both"
+			
 			],
 		});
 
@@ -139,3 +141,5 @@ export const getUserProfiles = async (req, res) => {
 		});
 	}
 };
+
+		

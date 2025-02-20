@@ -39,7 +39,7 @@ const ChatPage = () => {
 				<div className='flex items-center mb-4 bg-white rounded-lg shadow p-3'>
 					<img
 						src={match.image || "/avatar.png"}
-						className='w-12 h-12 object-cover rounded-full mr-3 border-2 border-pink-300'
+						className='w-12 h-12 object-cover rounded-full mr-3 border-2 border-black-300'
 					/>
 					<h2 className='text-xl font-semibold text-gray-800'>{match.name}</h2>
 				</div>

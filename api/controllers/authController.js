@@ -9,22 +9,25 @@ const signToken = (id) => {
 };
 
 export const signup = async (req, res) => {
-	const { name, email, password, age, gender, genderPreference } = req.body;
+	const { name, email, password, age, gender, genderPreference, travelPreferences } = req.body;
 	try {
-		if (!name || !email || !password || !age || !gender || !genderPreference) {
+		// Validate required fields
+		if (!name || !email || !password || !age || !gender || !genderPreference || !travelPreferences) {
 			return res.status(400).json({
 				success: false,
 				message: "All fields are required",
 			});
 		}
 
+		// Validate age
 		if (age < 18) {
 			return res.status(400).json({
 				success: false,
-				message: "You must at lest 18 years old",
+				message: "You must be at least 18 years old",
 			});
 		}
 
+		// Validate password length
 		if (password.length < 6) {
 			return res.status(400).json({
 				success: false,
@@ -32,6 +35,7 @@ export const signup = async (req, res) => {
 			});
 		}
 
+		// Create new user
 		const newUser = await User.create({
 			name,
 			email,
@@ -39,10 +43,13 @@ export const signup = async (req, res) => {
 			age,
 			gender,
 			genderPreference,
+			travelPreferences, // Add travelPreferences to the user document
 		});
 
+		// Generate JWT token
 		const token = signToken(newUser._id);
 
+		// Set JWT cookie
 		res.cookie("jwt", token, {
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
 			httpOnly: true, // prevents XSS attacks
@@ -50,6 +57,7 @@ export const signup = async (req, res) => {
 			secure: process.env.NODE_ENV === "production",
 		});
 
+		// Send response
 		res.status(201).json({
 			success: true,
 			user: newUser,
@@ -59,9 +67,11 @@ export const signup = async (req, res) => {
 		res.status(500).json({ success: false, message: "Server error" });
 	}
 };
+
 export const login = async (req, res) => {
 	const { email, password } = req.body;
 	try {
+		// Validate required fields
 		if (!email || !password) {
 			return res.status(400).json({
 				success: false,
@@ -69,8 +79,10 @@ export const login = async (req, res) => {
 			});
 		}
 
+		// Find user by email
 		const user = await User.findOne({ email }).select("+password");
 
+		// Validate user and password
 		if (!user || !(await user.matchPassword(password))) {
 			return res.status(401).json({
 				success: false,
@@ -78,8 +90,10 @@ export const login = async (req, res) => {
 			});
 		}
 
+		// Generate JWT token
 		const token = signToken(user._id);
 
+		// Set JWT cookie
 		res.cookie("jwt", token, {
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
 			httpOnly: true, // prevents XSS attacks
@@ -87,6 +101,7 @@ export const login = async (req, res) => {
 			secure: process.env.NODE_ENV === "production",
 		});
 
+		// Send response
 		res.status(200).json({
 			success: true,
 			user,
@@ -96,6 +111,7 @@ export const login = async (req, res) => {
 		res.status(500).json({ success: false, message: "Server error" });
 	}
 };
+
 export const logout = async (req, res) => {
 	res.clearCookie("jwt");
 	res.status(200).json({ success: true, message: "Logged out successfully" });
