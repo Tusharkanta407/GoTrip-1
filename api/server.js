@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { createServer } from "http";
+import { fileURLToPath } from "url";
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -20,7 +21,9 @@ const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-const __dirname = path.resolve();
+// Fix `__dirname` for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize WebSocket
 initializeSocket(httpServer);
@@ -35,12 +38,12 @@ const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin);
+      callback(null, true); // ✅ Fixed callback
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // ✅ Allows cookies & authentication headers
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 };
@@ -56,7 +59,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
 
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200); // ✅ Preflight success response
+    return res.sendStatus(200);
   }
 
   next();
@@ -77,8 +80,11 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Start Server
-httpServer.listen(PORT, () => {
-  console.log("Server started at this port:" + PORT);
-  connectDB();
+// ✅ Connect to Database before starting the server
+connectDB().then(() => {
+  httpServer.listen(PORT, () => {
+    console.log(`✅ Server started on port: ${PORT}`);
+  });
+}).catch(err => {
+  console.error("❌ Database connection failed:", err);
 });
