@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, MessageCircle } from 'lucide-react';
+import { User, MessageCircle, Sidebar } from 'lucide-react';
 import logo from "../assets/logo-dark2.svg";
 
 function Headerr() {
@@ -32,7 +32,7 @@ function Headerr() {
               rel="noopener noreferrer"
               className="px-4 py-2 bg-white text-black-800 border border-gray-300 rounded-md text-sm font-medium transition-colors duration-300 hover:bg-pink-500 hover:text-white shadow-md"
             >
-              BOOK
+             Plan Trip
             </a>
 
             {/* Icons */}

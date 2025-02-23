@@ -76,7 +76,7 @@ function AboutPage() {
             <div className="bg-white rounded-lg overflow-hidden shadow-lg">
               <img src={nishant} alt="Emma Davis" className="w-full h-64 object-cover" />
               <div className="p-6">
-                <h3 className="font-semibold text-xl mb-2">Nishanta Kumar</h3>
+                <h3 className="font-semibold text-xl mb-2">Nishant Kumar</h3>
                 <p className="text-gray-600 mb-2">Community Manager</p>
                 <p className="text-gray-500">Ensuring the best experience for our global community.</p>
               </div>

@@ -8,10 +8,10 @@ const AuthPage = () => {
 
 	return (
 		<div
-			className='min-h-screen flex items-center justify-center bg-gradient-to-br
-		from-red-500 to-pink-500 p-4
-	'
-		>
+  className='min-h-screen flex items-center justify-center bg-gradient-to-br 
+  from-sky-400 to-blue-600 p-4'
+>
+
 			<div className='w-full max-w-md'>
 				<h2 className='text-center text-3xl font-extrabold text-white mb-8'>
 					{isLogin ? "Sign in to Swipe" : "Create a Swipe account"}
