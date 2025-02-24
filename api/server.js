@@ -37,7 +37,9 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://gotrip-1-1.onrender.com"
+  "https://gotrip-1-1.onrender.com",
+  "https://www.gotrip-vercel.app",  // ✅ Add Vercel frontend
+  "https://gotrip-vercel.app"       // ✅ Also allow without "www"
 ];
 
 // ✅ CORS Configuration
