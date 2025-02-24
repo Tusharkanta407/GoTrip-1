@@ -33,11 +33,16 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 
-// Allowed Origins
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+// ✅ Allowed Origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://gotrip-1-1.onrender.com"
+];
 
+// ✅ CORS Configuration
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -49,44 +54,34 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 };
 
-// Use CORS
 app.use(cors(corsOptions));
 
 // ✅ Handle CORS Preflight Requests
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
+app.options("*", cors(corsOptions));
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-// Routes
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/messages", messageRoutes);
 
-// Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../client/dist")));
+  const clientDistPath = path.join(__dirname, "../client/dist");
+  console.log("✅ Serving static files from:", clientDistPath); // Debugging log
+  
+  app.use(express.static(clientDistPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
+    res.sendFile(path.resolve(clientDistPath, "index.html"));
   });
 }
 
 
-// ✅ Connect to Database before starting the server
+// ✅ Connect to Database and Start Server
 connectDB()
   .then(() => {
     httpServer.listen(PORT, () => {
-      console.log(`✅ Server started on port: ${PORT}`);
+      console.log(`✅ Server running on port: ${PORT}`);
     });
   })
   .catch((err) => {
