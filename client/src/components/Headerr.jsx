@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { User, MessageCircle, Menu, X } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { User, MessageCircle, Menu, X, Bot } from "lucide-react";
 import logo from "../assets/logo-dark2.svg";
 
 function Headerr() {
-  const [isOpen, setIsOpen] = useState(false); // State for mobile menu toggle
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();  // Use useNavigate hook
 
   return (
     <nav className="bg-transparent absolute top-0 left-0 right-0 z-50">
@@ -26,7 +27,6 @@ function Headerr() {
 
           {/* Right Section: About Button + Icons */}
           <div className={`md:flex items-center space-x-6 ml-auto ${isOpen ? "block" : "hidden"} md:block absolute md:static top-20 left-0 right-0 bg-white md:bg-transparent p-6 md:p-0 shadow-lg md:shadow-none`}>
-            {/* About Button */}
             <Link 
               to="/about" 
               className="block md:inline px-4 py-2 bg-white text-black border border-gray-300 rounded-md text-sm font-medium transition duration-300 hover:bg-pink-500 hover:text-white shadow-md"
@@ -34,7 +34,6 @@ function Headerr() {
               About
             </Link>
 
-            {/* Plan Trip Button */}
             <a 
               href="https://gotrip-appdir.vercel.app/tour-list-v1" 
               target="_blank" 
@@ -44,7 +43,14 @@ function Headerr() {
               Plan Trip
             </a>
 
-            {/* Icons */}
+            {/* AI Chatbot Button */}
+            <button 
+              onClick={() => navigate("/ai-chat")} 
+              className="flex items-center px-4 py-2 bg-white text-black border border-gray-300 rounded-md text-sm font-medium transition duration-300 hover:bg-blue-500 hover:text-white shadow-md"
+            >
+              <Bot className="h-5 w-5 mr-2" /> AI Chat
+            </button>
+
             <Link to="/chat/:id" className="block md:inline text-black hover:text-gray-700 p-2 rounded-full">
               <MessageCircle className="h-6 w-6" />
             </Link>
@@ -59,6 +65,8 @@ function Headerr() {
 }
 
 export default Headerr;
+
+
 
 
 

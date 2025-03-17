@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SwipePage from "./pages/SwipePage";
 import AuthPage from "./pages/AuthPage";
@@ -7,7 +7,9 @@ import ChatPage from "./pages/ChatPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import About from "./components/about";  // Add About import statement
+import About from "./components/about";
+import AiChat from "./components/AiChat";
+import { Navigate } from "react-router-dom"; // Ensure Navigate is imported
 
 function App() {
   const { checkAuth, authUser, checkingAuth } = useAuthStore();
@@ -21,12 +23,19 @@ function App() {
   return (
     <div className='absolute inset-0 -z-10 h-full w-full bg-white'>
       <Routes>
-        <Route path='/' element={authUser ? <HomePage /> : <Navigate to={"/auth"} />} />
-        <Route path='/auth' element={!authUser ? <AuthPage /> : <Navigate to={"/"} />} />
-        <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={"/auth"} />} />
-        <Route path='/chat/:id' element={authUser ? <ChatPage /> : <Navigate to={"/auth"} />} />
-        <Route path='/swipe' element={authUser ? <SwipePage /> : <Navigate to={"/auth"} />} /> 
-        <Route path="/about" element={<About />} />  {/* Add About Route */}
+        {/* Protected Routes: Redirect if not authenticated */}
+        <Route path='/' element={authUser ? <HomePage /> : <Navigate to="/auth" />} />
+        <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to="/auth" />} />
+        <Route path='/chat/:id' element={authUser ? <ChatPage /> : <Navigate to="/auth" />} />
+        <Route path='/swipe' element={authUser ? <SwipePage /> : <Navigate to="/auth" />} /> 
+
+        {/* Public Routes */}
+        <Route path='/auth' element={!authUser ? <AuthPage /> : <Navigate to="/" />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/ai-chat' element={<AiChat />} />
+
+        {/* Catch-all: Redirect unknown routes to home */}
+        <Route path='*' element={<Navigate to="/" />} />
       </Routes>
 
       <Toaster />
@@ -35,4 +44,6 @@ function App() {
 }
 
 export default App;
+
+
 
