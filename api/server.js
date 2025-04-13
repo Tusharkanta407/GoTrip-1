@@ -5,6 +5,9 @@ import cors from "cors";
 import path from "path";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import morgan from "morgan";
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -21,72 +24,94 @@ const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// Fix `__dirname` for ES modules
+// __dirname fix for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize WebSocket
+// Security Middleware
+app.use(helmet());
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Logging
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+// WebSocket setup
 initializeSocket(httpServer);
 
-// ✅ Middleware to Fix Payload Too Large Error
+// Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 
-// ✅ Allowed Origins
-const allowedOrigins = [
+// CORS Configuration
+const allowedOrigins = new Set([
   "http://localhost:5173",
   "http://localhost:5174",
   "https://gotrip-1-1.onrender.com",
-  "https://www.gotrip-vercel.app",  // ✅ Add Vercel frontend
-  "https://gotrip-vercel.app"       // ✅ Also allow without "www"
-];
+  "https://gotrip-vercel.app",
+  "https://www.gotrip-vercel.app"
+]);
 
-// ✅ CORS Configuration
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.has(origin.trim())) {
       callback(null, true);
     } else {
+      console.warn("❌ CORS blocked origin:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 app.use(cors(corsOptions));
-
-// ✅ Handle CORS Preflight Requests
 app.options("*", cors(corsOptions));
 
-// ✅ Routes
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/messages", messageRoutes);
 
+// Health Check
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "healthy" });
+});
+
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(__dirname, "../client/dist");
-  console.log("✅ Serving static files from:", clientDistPath); // Debugging log
-  
   app.use(express.static(clientDistPath));
-
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(clientDistPath, "index.html"));
   });
 }
 
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error("❌ Error:", err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
 
-// ✅ Connect to Database and Start Server
+// Database Connection & Server Start
 connectDB()
   .then(() => {
     httpServer.listen(PORT, () => {
       console.log(`✅ Server running on port: ${PORT}`);
+      console.log(`✅ Environment: ${process.env.NODE_ENV || "development"}`);
     });
   })
   .catch((err) => {
     console.error("❌ Database connection failed:", err);
+    process.exit(1);
   });
+
 
