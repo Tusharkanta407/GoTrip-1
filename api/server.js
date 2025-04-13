@@ -55,7 +55,9 @@ const allowedOrigins = new Set([
   "http://localhost:5174",
   "https://gotrip-1-1.onrender.com",
   "https://gotrip-vercel.app",
-  "https://www.gotrip-vercel.app"
+  "https://www.gotrip-vercel.app",
+  "https://go-trip34.vercel.app",             // Your Vercel frontend
+  "https://www.go-trip34.vercel.app"        // With www
 ]);
 
 const corsOptions = {
